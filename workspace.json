@@ -1,4 +1,8 @@
 {
   "version": 2,
-  "projects": {}
+  "projects": {
+    "game": "packages/game",
+    "server-lobby": "packages/server/lobby",
+    "server-map": "packages/server/map"
+  }
 }

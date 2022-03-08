@@ -1,0 +1,52 @@
+{
+  "root": "packages/server/lobby",
+  "sourceRoot": "packages/server/lobby/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/node:webpack",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/server/lobby",
+        "main": "packages/server/lobby/src/main.ts",
+        "tsConfig": "packages/server/lobby/tsconfig.app.json",
+        "assets": ["packages/server/lobby/src/assets"]
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "packages/server/lobby/src/environments/environment.ts",
+              "with": "packages/server/lobby/src/environments/environment.prod.ts"
+            }
+          ]
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/node:node",
+      "options": {
+        "buildTarget": "server-lobby:build"
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["packages/server/lobby/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/packages/server/lobby"],
+      "options": {
+        "jestConfig": "packages/server/lobby/jest.config.js",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}
