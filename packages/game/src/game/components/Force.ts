@@ -12,11 +12,9 @@ export function setMatterForce(id: number, x?: number, y?: number) {
 
 export function syncMatterForce(
   id: number,
-  sprite: Phaser.Physics.Matter.Sprite,
-  toSprite = false
+  sprite: Phaser.Physics.Matter.Sprite
 ) {
-  if (toSprite) {
-    if (Force.x[id] !== 0 || Force.y[id] !== 0)
-      sprite.applyForce(new Phaser.Math.Vector2(Force.x[id], Force.y[id]))
+  if (Force.x[id] !== 0 || Force.y[id] !== 0) {
+    sprite.applyForce(new Phaser.Math.Vector2(Force.x[id], Force.y[id]))
   }
 }

@@ -4,7 +4,8 @@ import { syncMatterForce } from '../components/Force'
 import {
   createMatterSprite,
   getTexture,
-  MatterSprite
+  MatterSprite,
+  syncMatterSprite
 } from '../components/MatterSprite'
 import {
   getPosition,
@@ -64,7 +65,10 @@ export function createMatterPhysicsSystem() {
   const query = defineQuery([Velocity, MatterSprite])
   return (world: IWorld) => {
     query(world).forEach((id) =>
-      getSprite(id, (sprite) => syncMatterVelocity(id, sprite))
+      getSprite(id, (sprite) => {
+        syncMatterVelocity(id, sprite)
+        syncMatterSprite(id, sprite)
+      })
     )
     return world
   }
@@ -74,7 +78,10 @@ export function createMatterPhysicsSyncSystem() {
   const matterQuery = defineQuery([MatterSprite, Position])
   return (world: IWorld) => {
     matterQuery(world).forEach((id) =>
-      getSprite(id, (sprite) => syncMatterPosition(id, sprite, false))
+      getSprite(id, (sprite) => {
+        syncMatterVelocity(id, sprite, false)
+        syncMatterPosition(id, sprite, false)
+      })
     )
   }
 }

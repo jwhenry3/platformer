@@ -1,6 +1,6 @@
 import { defineQuery, IWorld } from 'bitecs'
 import { Input } from '../components/Input'
-import { PlayerTag } from '../components/Player'
+import { PlayerTag } from '../components/tags'
 
 export function createPlayerSystem(
   cursors: Phaser.Types.Input.Keyboard.CursorKeys,
@@ -16,9 +16,13 @@ export function createPlayerSystem(
       if (Input.jumpTimer[id] > 0) {
         Input.jumpTimer[id] -= 1
       }
-      Input.jump[id] = Number(cursors.space.isDown && !Input.jumpTimer[id])
 
-      if (Input.jump[id]) Input.jumpTimer[id] = jumpDelay
+      if (cursors.space.isDown && !Input.jumpTimer[id]) {
+        Input.jumpTimer[id] = jumpDelay
+        Input.jump[id] = 1
+      } else {
+        Input.jump[id] = 0
+      }
     })
     return world
   }

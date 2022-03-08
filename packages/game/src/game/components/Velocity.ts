@@ -1,8 +1,12 @@
 import { defineComponent, Types } from 'bitecs'
+import { Input } from './Input'
+import { MatterSprite } from './MatterSprite'
 
 export const Velocity = defineComponent({
   x: Types.f32,
-  y: Types.f32
+  y: Types.f32,
+  keepX: Types.f32,
+  onGround: Types.f32
 })
 
 export function getVelocity(id: number) {
@@ -21,8 +25,23 @@ export function syncMatterVelocity(
 ) {
   if (toSprite) {
     sprite.setVelocity(Velocity.x[id], Velocity.y[id])
+    sprite.rotation = 0
+    if (!Velocity.onGround[id]) {
+      if (sprite.anims.getName() !== 'jump') {
+        sprite.play('jump')
+      }
+      return
+    }
+    if (Velocity.x[id] !== 0 && sprite.anims.getName() !== 'run') {
+      sprite.play('run')
+    } else if (Velocity.x[id] === 0 && sprite.anims.getName() !== 'stand') {
+      sprite.play('stand')
+    }
   } else {
-    Velocity.x[id] = sprite.body.velocity.x
+    if (!Velocity.keepX[id]) {
+      Velocity.x[id] = sprite.body.velocity.x
+    }
     Velocity.y[id] = sprite.body.velocity.y
+    if (Math.abs(Velocity.y[id]) < 0.5) Velocity.y[id] = 0
   }
 }

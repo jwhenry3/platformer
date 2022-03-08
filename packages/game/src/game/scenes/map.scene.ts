@@ -1,26 +1,15 @@
-import {
-  addComponent,
-  addEntity,
-  createWorld,
-  defineComponent,
-  defineQuery,
-  defineSystem,
-  enterQuery,
-  exitQuery,
-  IWorld,
-  pipe,
-  System,
-  Types
-} from 'bitecs'
+import { createWorld, IWorld, pipe } from 'bitecs'
 import Phaser from 'phaser'
+import { CollisionGroups } from '../components/MatterSprite'
+import { createNpc } from '../entities/npc.entity'
 import { createPlayer } from '../entities/player.entity'
 import {
   createMatterPhysicsSyncSystem,
   createMatterPhysicsSystem,
   createMatterSystem
 } from '../systems/matter.system'
+import { createNpcSystem } from '../systems/npc.system'
 import { createPlayerSystem } from '../systems/player.system'
-import { createSpriteSystem } from '../systems/sprite.system'
 import { createSteeringSystem } from '../systems/steering.system'
 
 export default class MapScene extends Phaser.Scene {
@@ -49,23 +38,55 @@ export default class MapScene extends Phaser.Scene {
         onAfterUpdate
       )
     })
+
   }
 
   preload() {
-    this.load.image('player', '/assets/stand.png')
+    this.load.spritesheet('player', '/assets/run.png', {
+      frameWidth: 33,
+      frameHeight: 57
+    })
   }
 
   create() {
+    this.anims.create({
+      key: 'stand',
+      frameRate: 1,
+      frames: this.anims.generateFrameNumbers('player', { start: 0, end: 0 }),
+      repeat: 0
+    })
+    this.anims.create({
+      key: 'jump',
+      frameRate: 1,
+      frames: this.anims.generateFrameNumbers('player', { start: 7, end: 7 }),
+      repeat: 0
+    })
+    this.anims.create({
+      key: 'run',
+      frameRate: 8,
+
+      frames: this.anims.generateFrameNumbers('player', { start: 1, end: 6 }),
+      repeat: -1
+    })
     const world = createWorld()
     this.world = world
     const player = createPlayer(world, true)
+    const npc = createNpc(world, 'test')
     this.pipeline = pipe(
       createMatterSystem(this.matter),
+      createNpcSystem(),
       createPlayerSystem(this.cursors),
       createSteeringSystem(),
       createMatterPhysicsSystem()
     )
     this.afterPhysicsPipeline = pipe(createMatterPhysicsSyncSystem())
+    const floor = this.matter.add.rectangle(0, 600, 10000, 100, {
+      friction: 1,
+      isStatic: true
+    })
+    floor.type = 'ground'
+    floor.collisionFilter.category = CollisionGroups.Floors
+
   }
 
   override update(t: number, dt: number) {

@@ -2,7 +2,7 @@ import { addComponent, addEntity, IWorld } from 'bitecs'
 import { Force } from '../components/Force'
 import { Input } from '../components/Input'
 import { MatterSprite, Sprites } from '../components/MatterSprite'
-import { PlayerTag } from '../components/Player'
+import { PlayerTag } from '../components/tags'
 import { Position } from '../components/Position'
 import { Velocity } from '../components/Velocity'
 
@@ -20,5 +20,6 @@ export function createPlayer(world: IWorld, isLocal: boolean = false) {
   Velocity.x[player] = 5
   Velocity.y[player] = 5
   MatterSprite.texture[player] = Sprites.Player
+  MatterSprite.facing[player] = 1
   return player
 }
