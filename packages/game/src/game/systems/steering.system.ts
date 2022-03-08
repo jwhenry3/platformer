@@ -11,7 +11,7 @@ export function createSteeringSystem(speed: number = 4) {
       if (Input.left[id] || Input.right[id])
         MatterSprite.facing[id] = -Input.left[id] + Input.right[id] + 1
       setMatterVelocity(id, (-Input.left[id] + Input.right[id]) * speed)
-      setMatterForce(id, undefined, Input.jump[id] * -0.04)
+      setMatterForce(id, undefined, Input.jump[id] * -0.02)
     })
     return world
   }
