@@ -1,6 +1,7 @@
 import { defineComponent, Types } from 'bitecs'
+import { Body } from './Body'
 import { Input } from './Input'
-import { MatterSprite } from './MatterSprite'
+import { CollisionGroups, MatterSprite } from './MatterSprite'
 
 export const Velocity = defineComponent({
   x: Types.f32,
@@ -24,6 +25,30 @@ export function syncMatterVelocity(
   toSprite = true
 ) {
   if (toSprite) {
+    if (Input.down[id] && Input.jump[id]) {
+      Body.fallingThroughPlatform[id] = 1
+      sprite.setCollidesWith([CollisionGroups.Floors])
+      setTimeout(() => {
+        if (Body.fallingThroughPlatform[id]) {
+          Body.fallingThroughPlatform[id] = 0
+          sprite.setCollidesWith([
+            CollisionGroups.Floors,
+            CollisionGroups.Platforms
+          ])
+        }
+      }, 100)
+    }
+    if (!Body.fallingThroughPlatform[id]) {
+      if (Velocity.y[id] < 0) {
+        console.log('jump through platform')
+        sprite.setCollidesWith([CollisionGroups.Floors])
+      } else {
+        sprite.setCollidesWith([
+          CollisionGroups.Floors,
+          CollisionGroups.Platforms
+        ])
+      }
+    }
     sprite.setVelocity(Velocity.x[id], Velocity.y[id])
     sprite.rotation = 0
     if (!Velocity.onGround[id]) {

@@ -8,10 +8,33 @@ export function createSteeringSystem(speed: number = 4) {
   const query = defineQuery([Input, Velocity])
   return (world: IWorld) => {
     query(world).forEach((id) => {
-      if (Input.left[id] || Input.right[id])
+      if (Input.left[id] || Input.right[id]) {
         MatterSprite.facing[id] = -Input.left[id] + Input.right[id] + 1
-      setMatterVelocity(id, (-Input.left[id] + Input.right[id]) * speed)
-      setMatterForce(id, undefined, Input.jump[id] * -0.02)
+      }
+      if (!Input.dashing[id])
+        MatterSprite.movementDirection[id] = MatterSprite.facing[id]
+      if (!Input.down[id])
+        setMatterForce(
+          id,
+          undefined,
+          !Input.dash[id]
+            ? Input.jump[id] * -0.015
+            : Input.dashingUp[id]
+            ? Input.dash[id] * -0.06
+            : Input.dash[id] * -0.03
+        )
+      if (Input.down[id]) {
+        setMatterForce(id, undefined, Input.jump[id] * 0.002)
+      }
+      setMatterVelocity(
+        id,
+        !Input.dashing[id] || Input.dashingUp[id]
+          ? (-Input.left[id] + Input.right[id]) * speed
+          : (MatterSprite.movementDirection[id] - 1) *
+              Input.dashing[id] *
+              speed *
+              3
+      )
     })
     return world
   }

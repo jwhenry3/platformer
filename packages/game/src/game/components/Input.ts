@@ -6,5 +6,8 @@ export const Input = defineComponent({
   left: Types.ui8,
   right: Types.ui8,
   jump: Types.ui8,
-  jumpTimer: Types.ui8
+  jumpTimer: Types.ui8,
+  dash: Types.ui8,
+  dashing: Types.ui8,
+  dashingUp: Types.ui8
 })

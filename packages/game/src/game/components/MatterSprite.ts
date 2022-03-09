@@ -1,3 +1,4 @@
+import { strictEqual } from 'assert'
 import { defineComponent, Types } from 'bitecs'
 import { Velocity } from './Velocity'
 
@@ -6,15 +7,23 @@ export enum Sprites {
 }
 export const TextureKeys = ['player']
 
-export enum CollisionGroups {
-  MovableEntities = 2,
-  Floors = 4,
-  Platforms = 6
+export const CollisionGroups = {
+  MovableEntities: -1,
+  Floors: 2,
+  Platforms: 4
 }
-
+export const GroundedCollisionTypes = ['ground', 'platform']
+export const GroundedCollisionGroups = [
+  CollisionGroups.Floors,
+  CollisionGroups.Platforms
+]
+export function isBodyGround(body: MatterJS.BodyType) {
+  return GroundedCollisionTypes.includes(body.type)
+}
 export const MatterSprite = defineComponent({
   texture: Types.ui8,
-  facing: Types.ui8
+  facing: Types.ui8,
+  movementDirection: Types.ui8
 })
 
 export function getTexture(id: number) {
@@ -31,20 +40,32 @@ export function createMatterSprite(
   sprite.type = 'entity'
   sprite.setMass(1)
   sprite.setVelocity(0, 0)
-  sprite.setOnCollide((e: any) => {
-    if (e.bodyA.type === 'ground' || e.bodyB.type === 'ground') {
-      console.log('landing!')
-      Velocity.onGround[id] = 1
+  sprite.setOnCollide(
+    ({
+      bodyA,
+      bodyB
+    }: {
+      bodyA: MatterJS.BodyType
+      bodyB: MatterJS.BodyType
+    }) => {
+      if (isBodyGround(bodyA) || isBodyGround(bodyB)) {
+        Velocity.onGround[id] = 1
+        Velocity.y[id] = 0
+        sprite.setVelocity(Velocity.x[id], 0)
+      }
     }
-  })
+  )
   sprite.setOnCollideEnd((e: any) => {
-    if (e.bodyA.type === 'ground' || e.bodyB.type === 'ground') {
-      console.log('jump!')
+    if (isBodyGround(e.bodyA) || isBodyGround(e.bodyB)) {
       Velocity.onGround[id] = 0
     }
   })
-  sprite.setCollisionCategory(CollisionGroups.MovableEntities)
-  sprite.setCollidesWith(CollisionGroups.Floors)
+  matter.body.scale(sprite.body as MatterJS.BodyType, 1, 0.25)
+  sprite.setOrigin(0.5, 0.925)
+  sprite.setMass(1)
+  sprite.setCollisionGroup(CollisionGroups.MovableEntities)
+  sprite.setCollidesWith([CollisionGroups.Floors, CollisionGroups.Platforms])
+  sprite.setBounce(0)
   return sprite
 }
 

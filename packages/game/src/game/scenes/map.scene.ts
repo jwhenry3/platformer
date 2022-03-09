@@ -38,7 +38,6 @@ export default class MapScene extends Phaser.Scene {
         onAfterUpdate
       )
     })
-
   }
 
   preload() {
@@ -70,6 +69,7 @@ export default class MapScene extends Phaser.Scene {
     })
     const world = createWorld()
     this.world = world
+
     const player = createPlayer(world, true)
     const npc = createNpc(world, 'test')
     this.pipeline = pipe(
@@ -87,6 +87,26 @@ export default class MapScene extends Phaser.Scene {
     floor.type = 'ground'
     floor.collisionFilter.category = CollisionGroups.Floors
 
+    let platform = this.matter.add.rectangle(100, 450, 1000, 4, {
+      friction: 1,
+      isStatic: true
+    })
+    platform.type = 'platform'
+    platform.collisionFilter.category = CollisionGroups.Platforms
+
+    platform = this.matter.add.rectangle(100, 400, 1000, 4, {
+      friction: 1,
+      isStatic: true
+    })
+    platform.type = 'platform'
+    platform.collisionFilter.category = CollisionGroups.Platforms
+
+    platform = this.matter.add.rectangle(100, 350, 1000, 4, {
+      friction: 1,
+      isStatic: true
+    })
+    platform.type = 'platform'
+    platform.collisionFilter.category = CollisionGroups.Platforms
   }
 
   override update(t: number, dt: number) {
