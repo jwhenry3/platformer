@@ -1,7 +1,9 @@
 import { strictEqual } from 'assert'
 import { defineComponent, Types } from 'bitecs'
+import { destroySprite } from '../systems/matter.system'
 import { actionStatuses } from './Action'
 import { Body } from './Body'
+import { Force } from './Force'
 import { Projectile } from './Projectile'
 import { Velocity } from './Velocity'
 
@@ -61,10 +63,19 @@ export function createProjectileSprite(
       const bData = bodyB.gameObject?.data.values
       const other = aData?.entityId !== id ? aData : bData
       if (other) {
-        if (other.entityId !== Projectile.owner[id]) {
+        if (other.entityId !== Projectile.owner[id] && !other.isProjectile) {
           console.log('We hit someone!', other)
-          if (!actionStatuses[other.entityId]) actionStatuses[other.entityId] = []
+          if (!actionStatuses[other.entityId])
+            actionStatuses[other.entityId] = []
           actionStatuses[other.entityId].push(Projectile.actionIdOnHit[id])
+          destroySprite(id)
+          // todo: make entity display animation and bump them back
+          Velocity.x[other.entityId] = Velocity.x[id] * 0.8
+          Velocity.onGround[other.entityId] = 0
+          Force.y[other.entityId] = -0.0035
+          setTimeout(() => {
+            Force.y[other.entityId] = 0
+          }, 100)
         }
       }
     }

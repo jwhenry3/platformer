@@ -11,7 +11,7 @@ export function createSteeringSystem(speed: number = 4) {
       if (Input.left[id] || Input.right[id]) {
         MatterSprite.facing[id] = -Input.left[id] + Input.right[id] + 1
       }
-      if (!Input.dashing[id])
+      if (!Input.dashing[id] && Velocity.onGround[id])
         MatterSprite.movementDirection[id] = MatterSprite.facing[id]
       if (!Input.down[id])
         setMatterForce(
@@ -29,7 +29,9 @@ export function createSteeringSystem(speed: number = 4) {
       setMatterVelocity(
         id,
         !Input.dashing[id] || Input.dashingUp[id]
-          ? (-Input.left[id] + Input.right[id]) * speed // add movement speed modifier
+          ? Velocity.onGround[id]
+            ? (-Input.left[id] + Input.right[id]) * speed
+            : undefined // add movement speed modifier
           : (MatterSprite.movementDirection[id] - 1) *
               Input.dashing[id] *
               speed *
