@@ -25,6 +25,7 @@ export function createPlayerSystem(
         Input.jumpTimer[id] = 10
       } else {
         Input.jump[id] = 0
+        // add skill modifiers that decide if these movements are allowed
         if (
           cursors.space.isDown &&
           !Input.dashing[id] &&
