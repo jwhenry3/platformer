@@ -18,10 +18,10 @@ export function createSteeringSystem(speed: number = 4) {
           id,
           undefined,
           !Input.dash[id]
-            ? Input.jump[id] * -0.015
+            ? Input.jump[id] * -0.015 // add jump modifier
             : Input.dashingUp[id]
-            ? Input.dash[id] * -0.06
-            : Input.dash[id] * -0.03
+            ? Input.dash[id] * -0.06 // add skill modifier
+            : Input.dash[id] * -0.03 // add skill modifier
         )
       if (Input.down[id]) {
         setMatterForce(id, undefined, Input.jump[id] * 0.002)
@@ -29,11 +29,11 @@ export function createSteeringSystem(speed: number = 4) {
       setMatterVelocity(
         id,
         !Input.dashing[id] || Input.dashingUp[id]
-          ? (-Input.left[id] + Input.right[id]) * speed
+          ? (-Input.left[id] + Input.right[id]) * speed // add movement speed modifier
           : (MatterSprite.movementDirection[id] - 1) *
               Input.dashing[id] *
               speed *
-              3
+              3 // add skill modifier
       )
     })
     return world
