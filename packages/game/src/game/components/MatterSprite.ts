@@ -96,3 +96,4 @@ export function syncMatterSprite(
   // turns the entity left or right based on npc direction or player movement
   sprite.setScale(MatterSprite.facing[id] === 0 ? -1 : 1, 1)
 }
+

@@ -50,24 +50,6 @@ export function syncMatterVelocity(
     }
     sprite.setVelocity(Velocity.x[id], Velocity.y[id])
     sprite.rotation = 0
-    if (sprite.type === 'entity') {
-      if (!Velocity.onGround[id]) {
-        if (sprite.anims.getName() !== 'jump') {
-          sprite.play('jump')
-        }
-        return
-      }
-      if (Velocity.x[id] !== 0 && sprite.anims.getName() !== 'run') {
-        sprite.play('run')
-      } else if (Velocity.x[id] === 0 && sprite.anims.getName() !== 'stand') {
-        sprite.play('stand')
-      }
-    }
-    if (sprite.type === 'projectile') {
-      if (sprite.anims.getName() !== 'fireball') {
-        sprite.play('fireball')
-      }
-    }
   } else {
     if (!Velocity.keepX[id]) {
       Velocity.x[id] = sprite.body.velocity.x

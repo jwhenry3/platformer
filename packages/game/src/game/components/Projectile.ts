@@ -8,3 +8,12 @@ export const Projectile = defineComponent({
   originalX: Types.f32,
   originalY: Types.f32
 })
+
+export function syncProjectileAnimations(
+  id: number,
+  sprite: Phaser.Physics.Matter.Sprite
+) {
+  if (sprite.anims.getName() !== 'fireball') {
+    sprite.play('fireball')
+  }
+}

@@ -1,6 +1,6 @@
 import { defineQuery, enterQuery, exitQuery, IWorld } from 'bitecs'
 import Phaser from 'phaser'
-import { Entity } from '../components/Entity'
+import { Entity, syncEntityAnimations } from '../components/Entity'
 import { syncMatterForce } from '../components/Force'
 import {
   createEntitySprite,
@@ -15,7 +15,7 @@ import {
   setPosition,
   syncMatterPosition
 } from '../components/Position'
-import { Projectile } from '../components/Projectile'
+import { Projectile, syncProjectileAnimations } from '../components/Projectile'
 import { syncMatterVelocity, Velocity } from '../components/Velocity'
 
 export const matterSpritesById = new Map<number, Phaser.Physics.Matter.Sprite>()
@@ -70,7 +70,9 @@ export function createProjectileMatterSystem(
       const [x, y] = getPosition(id)
       matterSpritesById.set(id, createProjectileSprite(matter, id, x, y))
     })
-    matterQuery(world).forEach((id) => syncSprite(id))
+    matterQuery(world).forEach((id) => {
+      syncSprite(id)
+    })
     matterQueryExit(world).forEach((id) => destroySprite(id))
 
     return world
@@ -78,15 +80,23 @@ export function createProjectileMatterSystem(
 }
 
 export function createMatterPhysicsSystem() {
-  const query = defineQuery([Velocity, MatterSprite])
+  const entityQuery = defineQuery([MatterSprite, Position, Entity])
+  const projectileQuery = defineQuery([MatterSprite, Position, Projectile])
   return (world: IWorld) => {
-    query(world).forEach((id) =>
+    entityQuery(world).forEach((id) =>
       getSprite(id, (sprite) => {
         syncMatterVelocity(id, sprite)
         syncMatterSprite(id, sprite)
+        syncEntityAnimations(id, sprite)
       })
     )
-    return world
+    projectileQuery(world).forEach((id) =>
+      getSprite(id, (sprite) => {
+        syncMatterVelocity(id, sprite)
+        syncMatterSprite(id, sprite)
+        syncProjectileAnimations(id, sprite)
+      })
+    )
   }
 }
 
