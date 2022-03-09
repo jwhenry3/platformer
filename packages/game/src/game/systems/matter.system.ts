@@ -1,8 +1,10 @@
 import { defineQuery, enterQuery, exitQuery, IWorld } from 'bitecs'
 import Phaser from 'phaser'
+import { Entity } from '../components/Entity'
 import { syncMatterForce } from '../components/Force'
 import {
-  createMatterSprite,
+  createEntitySprite,
+  createProjectileSprite,
   getTexture,
   MatterSprite,
   syncMatterSprite
@@ -13,6 +15,7 @@ import {
   setPosition,
   syncMatterPosition
 } from '../components/Position'
+import { Projectile } from '../components/Projectile'
 import { syncMatterVelocity, Velocity } from '../components/Velocity'
 
 export const matterSpritesById = new Map<number, Phaser.Physics.Matter.Sprite>()
@@ -38,22 +41,35 @@ export function syncSprite(id: number) {
   })
 }
 
-export function createSprite(
-  matter: Phaser.Physics.Matter.MatterPhysics,
-  id: number
-) {
-  const [x, y] = getPosition(id)
-  matterSpritesById.set(id, createMatterSprite(matter, id, x, y))
-}
-
-export function createMatterSystem(
+export function createEntityMatterSystem(
   matter: Phaser.Physics.Matter.MatterPhysics
 ) {
-  const matterQuery = defineQuery([MatterSprite])
+  const matterQuery = defineQuery([MatterSprite, Entity])
   const matterQueryEnter = enterQuery(matterQuery)
   const matterQueryExit = exitQuery(matterQuery)
   return (world: IWorld) => {
-    matterQueryEnter(world).forEach((id) => createSprite(matter, id))
+    matterQueryEnter(world).forEach((id) => {
+      const [x, y] = getPosition(id)
+      matterSpritesById.set(id, createEntitySprite(matter, id, x, y))
+    })
+    matterQuery(world).forEach((id) => syncSprite(id))
+    matterQueryExit(world).forEach((id) => destroySprite(id))
+
+    return world
+  }
+}
+
+export function createProjectileMatterSystem(
+  matter: Phaser.Physics.Matter.MatterPhysics
+) {
+  const matterQuery = defineQuery([MatterSprite, Projectile])
+  const matterQueryEnter = enterQuery(matterQuery)
+  const matterQueryExit = exitQuery(matterQuery)
+  return (world: IWorld) => {
+    matterQueryEnter(world).forEach((id) => {
+      const [x, y] = getPosition(id)
+      matterSpritesById.set(id, createProjectileSprite(matter, id, x, y))
+    })
     matterQuery(world).forEach((id) => syncSprite(id))
     matterQueryExit(world).forEach((id) => destroySprite(id))
 

@@ -9,5 +9,10 @@ export const Input = defineComponent({
   jumpTimer: Types.ui8,
   dash: Types.ui8,
   dashing: Types.ui8,
-  dashingUp: Types.ui8
+  dashingUp: Types.ui8,
+  shoot: Types.ui8,
+  shootDelay: Types.ui8,
+  shootDelayAmount: Types.ui8,
+  actionDelay: Types.ui8,
+  actionDelayAmount: Types.ui8
 })

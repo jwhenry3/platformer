@@ -1,15 +1,18 @@
 import { createWorld, IWorld, pipe } from 'bitecs'
 import Phaser from 'phaser'
 import { CollisionGroups } from '../components/MatterSprite'
+import { PlayerTag } from '../components/tags'
 import { createNpc } from '../entities/npc.entity'
 import { createPlayer } from '../entities/player.entity'
 import {
   createMatterPhysicsSyncSystem,
   createMatterPhysicsSystem,
-  createMatterSystem
+  createEntityMatterSystem,
+  createProjectileMatterSystem
 } from '../systems/matter.system'
 import { createNpcSystem } from '../systems/npc.system'
 import { createPlayerSystem } from '../systems/player.system'
+import { createProjectileSystem } from '../systems/projectile.system'
 import { createSteeringSystem } from '../systems/steering.system'
 
 export default class MapScene extends Phaser.Scene {
@@ -18,12 +21,14 @@ export default class MapScene extends Phaser.Scene {
   protected pipeline!: (world: IWorld) => void
   protected afterPhysicsPipeline!: (world: IWorld) => void
   protected cursors!: Phaser.Types.Input.Keyboard.CursorKeys
+  protected actionKeys!: Record<string, Phaser.Input.Keyboard.Key>
 
   constructor() {
     super('game')
   }
   init() {
     this.cursors = this.input.keyboard.createCursorKeys()
+    this.actionKeys = this.input.keyboard.addKeys('A,S,Z,X,Q,W') as any
     const onAfterUpdate = () => {
       if (!this.afterPhysicsPipeline || !this.world) return
       this.afterPhysicsPipeline(this.world)
@@ -44,6 +49,10 @@ export default class MapScene extends Phaser.Scene {
     this.load.spritesheet('player', '/assets/run.png', {
       frameWidth: 33,
       frameHeight: 57
+    })
+    this.load.spritesheet('fireball', '/assets/fireball.png', {
+      frameWidth: 64,
+      frameHeight: 64
     })
   }
 
@@ -67,15 +76,23 @@ export default class MapScene extends Phaser.Scene {
       frames: this.anims.generateFrameNumbers('player', { start: 1, end: 6 }),
       repeat: -1
     })
+    this.anims.create({
+      key: 'fireball',
+      frameRate: 10,
+      frames: this.anims.generateFrameNumbers('fireball', { start: 0, end: 7 }),
+      repeat: -1
+    })
     const world = createWorld()
     this.world = world
 
     const player = createPlayer(world, true)
     const npc = createNpc(world, 'test')
     this.pipeline = pipe(
-      createMatterSystem(this.matter),
+      createEntityMatterSystem(this.matter),
+      createProjectileMatterSystem(this.matter),
+      createProjectileSystem(this.matter),
       createNpcSystem(),
-      createPlayerSystem(this.cursors),
+      createPlayerSystem(this.cursors, this.actionKeys),
       createSteeringSystem(),
       createMatterPhysicsSystem()
     )

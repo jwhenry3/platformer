@@ -1,5 +1,6 @@
 import { addComponent, addEntity, IWorld } from 'bitecs'
 import { Bounds } from '../components/Bounds'
+import { Entity } from '../components/Entity'
 import { MatterSprite, Sprites } from '../components/MatterSprite'
 import { Position } from '../components/Position'
 import { NpcTag } from '../components/tags'
@@ -7,6 +8,7 @@ import { Velocity } from '../components/Velocity'
 
 export function createNpc(world: IWorld, type?: string) {
   const npc = addEntity(world)
+  addComponent(world, Entity, npc)
   addComponent(world, NpcTag, npc)
   addComponent(world, Position, npc)
   addComponent(world, Bounds, npc)

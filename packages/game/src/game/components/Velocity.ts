@@ -40,7 +40,6 @@ export function syncMatterVelocity(
     }
     if (!Body.fallingThroughPlatform[id]) {
       if (Velocity.y[id] < 0) {
-        console.log('jump through platform')
         sprite.setCollidesWith([CollisionGroups.Floors])
       } else {
         sprite.setCollidesWith([
@@ -51,16 +50,23 @@ export function syncMatterVelocity(
     }
     sprite.setVelocity(Velocity.x[id], Velocity.y[id])
     sprite.rotation = 0
-    if (!Velocity.onGround[id]) {
-      if (sprite.anims.getName() !== 'jump') {
-        sprite.play('jump')
+    if (sprite.type === 'entity') {
+      if (!Velocity.onGround[id]) {
+        if (sprite.anims.getName() !== 'jump') {
+          sprite.play('jump')
+        }
+        return
       }
-      return
+      if (Velocity.x[id] !== 0 && sprite.anims.getName() !== 'run') {
+        sprite.play('run')
+      } else if (Velocity.x[id] === 0 && sprite.anims.getName() !== 'stand') {
+        sprite.play('stand')
+      }
     }
-    if (Velocity.x[id] !== 0 && sprite.anims.getName() !== 'run') {
-      sprite.play('run')
-    } else if (Velocity.x[id] === 0 && sprite.anims.getName() !== 'stand') {
-      sprite.play('stand')
+    if (sprite.type === 'projectile') {
+      if (sprite.anims.getName() !== 'fireball') {
+        sprite.play('fireball')
+      }
     }
   } else {
     if (!Velocity.keepX[id]) {

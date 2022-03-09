@@ -1,16 +1,19 @@
 import { strictEqual } from 'assert'
 import { defineComponent, Types } from 'bitecs'
+import { Body } from './Body'
 import { Velocity } from './Velocity'
 
 export enum Sprites {
-  Player = 0
+  Player = 0,
+  Fireball = 1
 }
-export const TextureKeys = ['player']
+export const TextureKeys = ['player', 'fireball']
 
 export const CollisionGroups = {
   MovableEntities: -1,
   Floors: 2,
-  Platforms: 4
+  Platforms: 4,
+  Projectiles: 6
 }
 export const GroundedCollisionTypes = ['ground', 'platform']
 export const GroundedCollisionGroups = [
@@ -27,10 +30,27 @@ export const MatterSprite = defineComponent({
 })
 
 export function getTexture(id: number) {
+  console.log(MatterSprite.texture[id], TextureKeys[MatterSprite.texture[id]])
   return TextureKeys[MatterSprite.texture[id] || 0] || 'none'
 }
+export function createProjectileSprite(
+  matter: Phaser.Physics.Matter.MatterPhysics,
+  id: number,
+  x: number,
+  y: number
+) {
+  const sprite = matter.add.sprite(x, y, getTexture(id))
+  sprite.type = 'projectile'
+  sprite.setMass(1)
+  sprite.setStatic(false)
+  sprite.setSensor(!!Body.isSensor[id])
+  sprite.setCollisionGroup(CollisionGroups.Projectiles)
+  sprite.setCollidesWith([CollisionGroups.MovableEntities])
+  sprite.setScale(0.5, 0.5)
+  return sprite
+}
 
-export function createMatterSprite(
+export function createEntitySprite(
   matter: Phaser.Physics.Matter.MatterPhysics,
   id: number,
   x: number,
