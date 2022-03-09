@@ -1,4 +1,5 @@
 import { addComponent, addEntity, IWorld } from 'bitecs'
+import { ActionStatus } from '../components/Action'
 import { Bounds } from '../components/Bounds'
 import { Entity } from '../components/Entity'
 import { MatterSprite, Sprites } from '../components/MatterSprite'
@@ -14,6 +15,7 @@ export function createNpc(world: IWorld, type?: string) {
   addComponent(world, Bounds, npc)
   addComponent(world, Velocity, npc)
   addComponent(world, MatterSprite, npc)
+  addComponent(world, ActionStatus, npc)
 
   Position.x[npc] = 400
   Position.y[npc] = 540

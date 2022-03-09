@@ -7,7 +7,7 @@ import { Position } from '../components/Position'
 import { Projectile } from '../components/Projectile'
 import { Velocity } from '../components/Velocity'
 
-export function createProjectile(world: IWorld, owner: number) {
+export function createFireball(world: IWorld, owner: number) {
   const projectile = addEntity(world)
   addComponent(world, Body, projectile)
   addComponent(world, Projectile, projectile)
@@ -16,7 +16,9 @@ export function createProjectile(world: IWorld, owner: number) {
   addComponent(world, Force, projectile)
   addComponent(world, MatterSprite, projectile)
 
-  const direction = MatterSprite.facing[owner] - 1
+  const facingValue =
+    MatterSprite.facing[owner] === 1 ? 2 : MatterSprite.facing[owner]
+  const direction = facingValue - 1
   Position.x[projectile] = Position.x[owner]
   Position.y[projectile] = Position.y[owner] - 32
   Velocity.x[projectile] = direction * 0.5
@@ -25,11 +27,11 @@ export function createProjectile(world: IWorld, owner: number) {
   Projectile.distance[projectile] = 1000 // add skill modifier
   Projectile.originalX[projectile] = Position.x[projectile]
   Projectile.originalY[projectile] = Position.y[projectile]
-  Projectile.direction[projectile] = MatterSprite.facing[owner]
+  Projectile.direction[projectile] = facingValue
   Projectile.speed[projectile] = 0.8 // add skill modifier
   Body.isSensor[projectile] = 1
 
   MatterSprite.texture[projectile] = Sprites.Fireball
-  MatterSprite.facing[projectile] = MatterSprite.facing[owner]
+  MatterSprite.facing[projectile] = facingValue
   return projectile
 }

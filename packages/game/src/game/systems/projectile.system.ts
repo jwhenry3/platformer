@@ -4,7 +4,7 @@ import { Position } from '../components/Position'
 import { Projectile } from '../components/Projectile'
 import { PlayerTag } from '../components/tags'
 import { Velocity } from '../components/Velocity'
-import { createProjectile } from '../entities/projectile.entity'
+import { createFireball } from '../entities/projectile.entity'
 
 export function createProjectileSystem(
   matter: Phaser.Physics.Matter.MatterPhysics
@@ -17,7 +17,7 @@ export function createProjectileSystem(
       if (Input.actionDelay[id] === 0)
         if (Input.shoot[id] && Input.shootDelay[id] === 0) {
           Input.shootDelay[id] = Input.shootDelayAmount[id]
-          createProjectile(world, id)
+          createFireball(world, id)
         }
     })
     projectileQuery(world).forEach((id) => {

@@ -6,7 +6,8 @@ export const Projectile = defineComponent({
   speed: Types.ui8,
   distance: Types.f32,
   originalX: Types.f32,
-  originalY: Types.f32
+  originalY: Types.f32,
+  actionIdOnHit: Types.ui32
 })
 
 export function syncProjectileAnimations(

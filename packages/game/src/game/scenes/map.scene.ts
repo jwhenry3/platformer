@@ -4,6 +4,7 @@ import { CollisionGroups } from '../components/MatterSprite'
 import { PlayerTag } from '../components/tags'
 import { createNpc } from '../entities/npc.entity'
 import { createPlayer } from '../entities/player.entity'
+import { createActionSystem } from '../systems/action.system'
 import {
   createMatterPhysicsSyncSystem,
   createMatterPhysicsSystem,
@@ -91,6 +92,7 @@ export default class MapScene extends Phaser.Scene {
       createEntityMatterSystem(this.matter),
       createProjectileMatterSystem(this.matter),
       createProjectileSystem(this.matter),
+      createActionSystem(),
       createNpcSystem(),
       createPlayerSystem(this.cursors, this.actionKeys),
       createSteeringSystem(),

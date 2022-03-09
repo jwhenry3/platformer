@@ -1,14 +1,28 @@
-import { defineQuery, IWorld } from 'bitecs'
+import { defineQuery, enterQuery, hasComponent, IWorld } from 'bitecs'
 import { Input } from '../components/Input'
+import { MatterSprite } from '../components/MatterSprite'
 import { PlayerTag } from '../components/tags'
 import { Velocity } from '../components/Velocity'
+import { getSprite } from './matter.system'
 
 export function createPlayerSystem(
   cursors: Phaser.Types.Input.Keyboard.CursorKeys,
   actionKeys: Record<string, Phaser.Input.Keyboard.Key>
 ) {
   const query = defineQuery([PlayerTag, Input])
+  const playerEnter = enterQuery(defineQuery([PlayerTag]))
   return (world: IWorld) => {
+    playerEnter(world).forEach((id) => {
+      getSprite(id, (sprite) => {
+        sprite.setData({
+          entityId: id,
+          isEntity: true,
+          isProjectile: false,
+          isPlayer: true,
+          isLocalPlayer: hasComponent(world, Input, id)
+        })
+      })
+    })
     query(world).forEach((id) => {
       Input.up[id] = Number(cursors.up.isDown)
       Input.down[id] = Number(cursors.down.isDown)

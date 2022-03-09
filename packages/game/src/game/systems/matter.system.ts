@@ -69,6 +69,7 @@ export function createProjectileMatterSystem(
     matterQueryEnter(world).forEach((id) => {
       const [x, y] = getPosition(id)
       matterSpritesById.set(id, createProjectileSprite(matter, id, x, y))
+
     })
     matterQuery(world).forEach((id) => {
       syncSprite(id)
