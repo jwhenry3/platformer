@@ -6,7 +6,7 @@ export function createPlatform(
   y: number,
   width: number
 ) {
-  const platform = matter.add.rectangle(x, y, 1000, 8, {
+  const platform = matter.add.rectangle(x, y, 1000, 1, {
     isStatic: true,
     collisionFilter: {
       category: CollisionGroups.Platforms,
