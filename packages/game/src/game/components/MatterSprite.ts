@@ -14,10 +14,10 @@ export enum Sprites {
 export const TextureKeys = ['player', 'fireball']
 
 export const CollisionGroups = {
-  MovableEntities: -1,
-  Floors: 2,
-  Platforms: 4,
-  Projectiles: 6
+  MovableEntities: 0x0001,
+  Floors: 0x0002,
+  Platforms: 0x0004,
+  Attackables: 0x0008
 }
 export const GroundedCollisionTypes = ['ground', 'platform']
 export const GroundedCollisionGroups = [
@@ -51,6 +51,11 @@ export function createProjectileSprite(
     actionId: Projectile.actionIdOnHit[id],
     owner: Projectile.owner[id]
   })
+  sprite.setMass(1)
+  sprite.setSensor(true)
+  sprite.setScale(0.5, 0.5)
+  sprite.setCollisionCategory(CollisionGroups.Attackables)
+  sprite.setCollidesWith(CollisionGroups.MovableEntities)
   sprite.setOnCollide(
     ({
       bodyA,
@@ -62,9 +67,9 @@ export function createProjectileSprite(
       const aData = bodyA.gameObject?.data.values
       const bData = bodyB.gameObject?.data.values
       const other = aData?.entityId !== id ? aData : bData
+      console.log('collide 2!')
       if (other) {
         if (other.entityId !== Projectile.owner[id] && !other.isProjectile) {
-          console.log('We hit someone!', other)
           if (!actionStatuses[other.entityId])
             actionStatuses[other.entityId] = []
           actionStatuses[other.entityId].push(Projectile.actionIdOnHit[id])
@@ -80,11 +85,6 @@ export function createProjectileSprite(
       }
     }
   )
-  sprite.setMass(1)
-  sprite.setSensor(true)
-  sprite.setScale(0.5, 0.5)
-  sprite.setCollisionCategory(CollisionGroups.Projectiles)
-  sprite.setCollidesWith([CollisionGroups.MovableEntities])
   return sprite
 }
 
@@ -96,6 +96,7 @@ export function createEntitySprite(
 ) {
   const sprite = matter.add.sprite(x, y, getTexture(id))
   sprite.type = 'entity'
+  console.log('id', id)
   sprite.setData({
     entityId: id,
     isEntity: true,
@@ -112,10 +113,13 @@ export function createEntitySprite(
       bodyA: MatterJS.BodyType
       bodyB: MatterJS.BodyType
     }) => {
+      console.log('collide!')
       if (isBodyGround(bodyA) || isBodyGround(bodyB)) {
         Velocity.onGround[id] = 1
         Velocity.y[id] = 0
         sprite.setVelocity(Velocity.x[id], 0)
+      } else {
+        MatterSprite.movementDirection[id] = 1
       }
     }
   )
@@ -127,13 +131,8 @@ export function createEntitySprite(
   matter.body.scale(sprite.body as MatterJS.BodyType, 1, 0.25)
   sprite.setOrigin(0.5, 0.925)
   sprite.setMass(1)
-  sprite.setCollisionGroup(CollisionGroups.MovableEntities)
   sprite.setCollisionCategory(CollisionGroups.MovableEntities)
-  sprite.setCollidesWith([
-    CollisionGroups.Floors,
-    CollisionGroups.Platforms,
-    CollisionGroups.Projectiles
-  ])
+  sprite.setCollidesWith(CollisionGroups.Floors | CollisionGroups.Attackables)
   sprite.setBounce(0)
   return sprite
 }

@@ -25,29 +25,6 @@ export function syncMatterVelocity(
   toSprite = true
 ) {
   if (toSprite) {
-    if (Input.down[id] && Input.jump[id]) {
-      Body.fallingThroughPlatform[id] = 1
-      sprite.setCollidesWith([CollisionGroups.Floors])
-      setTimeout(() => {
-        if (Body.fallingThroughPlatform[id]) {
-          Body.fallingThroughPlatform[id] = 0
-          sprite.setCollidesWith([
-            CollisionGroups.Floors,
-            CollisionGroups.Platforms
-          ])
-        }
-      }, 100)
-    }
-    if (!Body.fallingThroughPlatform[id]) {
-      if (Velocity.y[id] < 0) {
-        sprite.setCollidesWith([CollisionGroups.Floors])
-      } else {
-        sprite.setCollidesWith([
-          CollisionGroups.Floors,
-          CollisionGroups.Platforms
-        ])
-      }
-    }
     sprite.setVelocity(Velocity.x[id], Velocity.y[id])
     sprite.rotation = 0
   } else {
@@ -56,5 +33,18 @@ export function syncMatterVelocity(
     }
     Velocity.y[id] = sprite.body.velocity.y
     if (Math.abs(Velocity.y[id]) < 0.5) Velocity.y[id] = 0
+    if (sprite.data.values['isEntity']) {
+      if (Velocity.y[id] >= 0 && (!Input.down[id] || !Input.jumpTimer[id])) {
+        sprite.setCollidesWith(
+          CollisionGroups.Floors |
+            CollisionGroups.Platforms |
+            CollisionGroups.Attackables
+        )
+      } else {
+        sprite.setCollidesWith(
+          CollisionGroups.Floors | CollisionGroups.Attackables
+        )
+      }
+    }
   }
 }

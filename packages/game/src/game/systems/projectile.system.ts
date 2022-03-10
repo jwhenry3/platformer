@@ -5,6 +5,7 @@ import { Projectile } from '../components/Projectile'
 import { PlayerTag } from '../components/tags'
 import { Velocity } from '../components/Velocity'
 import { createFireball } from '../entities/projectile.entity'
+import { getSprite } from './matter.system'
 
 export function createProjectileSystem(
   matter: Phaser.Physics.Matter.MatterPhysics
@@ -21,8 +22,9 @@ export function createProjectileSystem(
         }
     })
     projectileQuery(world).forEach((id) => {
-      Velocity.x[id] = (Projectile.direction[id] - 1) * 5
+      Velocity.x[id] = (Projectile.direction[id] - 1) * Projectile.speed[id]
       Velocity.y[id] = -0.56
+
       if (
         Math.abs(Position.x[id] - Projectile.originalX[id]) >
         Projectile.distance[id]

@@ -10,8 +10,10 @@ export function createSteeringSystem(speed: number = 4) {
     query(world).forEach((id) => {
       if (Input.left[id] || Input.right[id]) {
         MatterSprite.facing[id] = -Input.left[id] + Input.right[id] + 1
+      } else if (Velocity.onGround[id]) {
+        MatterSprite.movementDirection[id] = 1
       }
-      if (!Input.dashing[id] && Velocity.onGround[id])
+      if ((!Input.dashing[id] && Velocity.onGround[id]) || Input.dash[id])
         MatterSprite.movementDirection[id] = MatterSprite.facing[id]
       if (!Input.down[id])
         setMatterForce(
@@ -28,14 +30,13 @@ export function createSteeringSystem(speed: number = 4) {
       }
       setMatterVelocity(
         id,
-        !Input.dashing[id] || Input.dashingUp[id]
-          ? Velocity.onGround[id]
-            ? (-Input.left[id] + Input.right[id]) * speed
-            : undefined // add movement speed modifier
-          : (MatterSprite.movementDirection[id] - 1) *
-              Input.dashing[id] *
-              speed *
-              3 // add skill modifier
+        Velocity.onGround[id]
+          ? (-Input.left[id] + Input.right[id]) * speed
+          : !Input.dashingUp[id] && Input.dashing[id]
+          ? (MatterSprite.movementDirection[id] - 1) *
+            (Input.dashing[id] ? 3 : 1) *
+            speed
+          : undefined
       )
     })
     return world
