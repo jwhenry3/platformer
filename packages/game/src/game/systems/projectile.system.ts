@@ -4,8 +4,7 @@ import { Position } from '../components/Position'
 import { Projectile } from '../components/Projectile'
 import { PlayerTag } from '../components/tags'
 import { Velocity } from '../components/Velocity'
-import { createFireball } from '../entities/projectile.entity'
-import { getSprite } from './matter.system'
+import { createFireball } from '../factories/projectile.entity'
 
 export function createProjectileSystem(
   matter: Phaser.Physics.Matter.MatterPhysics

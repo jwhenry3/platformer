@@ -1,10 +1,9 @@
 import { createWorld, IWorld, pipe } from 'bitecs'
 import Phaser from 'phaser'
 import { CollisionGroups } from '../components/MatterSprite'
-import { PlayerTag } from '../components/tags'
-import { createFallSensor } from '../entities/fall.sensor'
-import { createNpc } from '../entities/npc.entity'
-import { createPlayer } from '../entities/player.entity'
+import { createNpc } from '../factories/npc.entity'
+import { createPlatform } from '../factories/platform.entity'
+import { createPlayer } from '../factories/player.entity'
 import { createActionSystem } from '../systems/action.system'
 import {
   createMatterPhysicsSyncSystem,
@@ -102,54 +101,28 @@ export default class MapScene extends Phaser.Scene {
     )
     this.afterPhysicsPipeline = pipe(createMatterPhysicsSyncSystem())
 
-    this.matter.add.rectangle(-10, 300, 20, 600, {
+    let rect = this.matter.add.rectangle(-10, 300, 20, 600, {
       isStatic: true,
-      friction: 0,
-      frictionAir: 0,
-      frictionStatic: 0,
       collisionFilter: { category: CollisionGroups.Floors }
     })
-    this.matter.add.rectangle(500, -10, 1020, 20, {
+    rect = this.matter.add.rectangle(500, -10, 1020, 20, {
       isStatic: true,
-      friction: 0,
-      frictionAir: 0,
-      frictionStatic: 0,
       collisionFilter: { category: CollisionGroups.Floors }
     })
-    this.matter.add.rectangle(500, 600, 1020, 20, {
+    rect.type = 'ground'
+    rect = this.matter.add.rectangle(500, 600, 1020, 20, {
       isStatic: true,
-      friction: 0,
-      frictionAir: 0,
-      frictionStatic: 0,
       collisionFilter: { category: CollisionGroups.Floors }
     })
-    this.matter.add.rectangle(1010, 300, 20, 600, {
+    rect.type = 'ground'
+    rect = this.matter.add.rectangle(1010, 300, 20, 600, {
       isStatic: true,
-      friction: 0,
-      frictionAir: 0,
-      frictionStatic: 0,
       collisionFilter: { category: CollisionGroups.Floors }
     })
-    const floor = this.matter.add.rectangle(0, 600, 10000, 100, {
-      isStatic: true
-    })
-    floor.type = 'ground'
-    floor.collisionFilter.category = CollisionGroups.Floors
-    const options = {
-      isStatic: true,
-      collisionFilter: {
-        category: CollisionGroups.Platforms,
-        mask: CollisionGroups.MovableEntities
-      }
-    }
-    let platform = this.matter.add.rectangle(100, 450, 1000, 12, options)
-    platform.type = 'platform'
 
-    platform = this.matter.add.rectangle(100, 400, 1000, 12, options)
-    platform.type = 'platform'
-
-    platform = this.matter.add.rectangle(100, 350, 1000, 12, options)
-    platform.type = 'platform'
+    createPlatform(this.matter, 100, 450, 1000)
+    createPlatform(this.matter, 100, 400, 1000)
+    createPlatform(this.matter, 100, 350, 1000)
   }
 
   override update(t: number, dt: number) {

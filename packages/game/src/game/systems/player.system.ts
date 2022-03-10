@@ -31,7 +31,10 @@ export function createPlayerSystem(
       Input.dash[id] = 0
       Input.shoot[id] = Number(actionKeys['A'].isDown)
       if (Input.actionDelay[id] > 0) Input.actionDelay[id]--
-      if (Input.jumpTimer[id] > 0) Input.jumpTimer[id]--
+      if (Input.jumpTimer[id] > 0) {
+        Input.jumpTimer[id]--
+        if (Input.jumpTimer[id] === 0) Input.jumpingDown[id] = 0
+      }
       if (Velocity.onGround[id]) {
         Input.dashing[id] = 0
         Input.dashingUp[id] = 0
@@ -41,6 +44,9 @@ export function createPlayerSystem(
           Input.actionDelay[id] = Input.actionDelayAmount[id]
           Input.jump[id] = 1
           Input.jumpTimer[id] = 10
+          if (Input.down[id]) {
+            Input.jumpingDown[id] = 1
+          }
         }
       } else {
         Input.jump[id] = 0

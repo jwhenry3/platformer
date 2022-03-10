@@ -32,9 +32,16 @@ export function syncMatterVelocity(
       Velocity.x[id] = sprite.body.velocity.x
     }
     Velocity.y[id] = sprite.body.velocity.y
+    if (sprite.body.velocity.y > 10) {
+      Velocity.y[id] = 10
+      sprite.body.velocity.y = 10
+    }
     if (Math.abs(Velocity.y[id]) < 0.5) Velocity.y[id] = 0
     if (sprite.data.values['isEntity']) {
-      if (Velocity.y[id] >= 0 && (!Input.down[id] || !Input.jumpTimer[id])) {
+      if (
+        (Input.dashing[id] && Velocity.y[id] > 2) ||
+        (!Input.dashing[id] && Velocity.y[id] >= 0 && !Input.jumpingDown[id])
+      ) {
         sprite.setCollidesWith(
           CollisionGroups.Floors |
             CollisionGroups.Platforms |
